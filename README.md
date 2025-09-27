@@ -39,8 +39,8 @@ La aplicación combina capacidades de análisis de imágenes con un sistema de c
 
 1. **Clonar el repositorio**:
    ```bash
-   git clone https://github.com/tu-usuario/medical-web.git
-   cd medical-web
+   git clone https://github.com/schnneider-utp/medicalweb2.0
+   cd medicalweb2.0
    ```
 
 2. **Instalar dependencias**:
