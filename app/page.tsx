@@ -409,7 +409,15 @@ export default function Home() {
                       e.target.style.height = e.target.scrollHeight + 'px';
                     }
                   }}
-                  placeholder="Escribe tu pregunta aquí... (máximo 1200 caracteres)"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault();
+                      if (chatInput.trim() && !isChatLoading) {
+                        handleChatSubmit(e as any);
+                      }
+                    }
+                  }}
+                  placeholder="Escribe tu pregunta aquí... (máximo 1200 caracteres)."
                   className="flex-1 p-3 rounded-lg bg-white text-black focus:ring-2 focus:ring-blue-500 transition-all duration-300 resize-none overflow-hidden min-h-[48px] max-h-[120px]"
                   disabled={isChatLoading}
                   maxLength={1200}
