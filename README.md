@@ -204,9 +204,58 @@ La aplicación implementa varias capas de seguridad:
 - **Complemento, No Sustituto**: No tomar decisiones médicas basadas únicamente en este análisis
 - **Privacidad**: Las imágenes y datos se procesan en el servidor pero no se almacenan permanentemente
 
-## Tecnologías Utilizadas
+## Tecnologías y Frameworks Utilizados
 
-- **Frontend**: Next.js 14, React 18, Tailwind CSS
-- **Backend**: API Routes de Next.js
+### Framework Principal
+- **Next.js**: v14.2.16 - Framework de React para renderizado del lado del servidor
+- **React**: v18 - Biblioteca para construcción de interfaces de usuario
+- **TypeScript**: v5 - Superset tipado de JavaScript
+
+### Componentes de UI
+- **Radix UI**: Biblioteca completa de componentes accesibles y sin estilos
+  - Componentes disponibles: Accordion, Alert Dialog, Avatar, Checkbox, Dialog, Dropdown Menu, etc.
+- **Lucide React**: v0.454.0 - Biblioteca de iconos
+- **Geist**: Fuente y sistema de diseño de Vercel
+- **Embla Carousel**: Carrusel de imágenes y contenido
+- **React Day Picker**: Selector de fechas
+- **Sonner**: Sistema de notificaciones
+- **Vaul**: Componentes de drawer/modal
+
+### Estilos y CSS
+- **Tailwind CSS**: v4.1.9 - Framework de utilidades CSS
+- **Tailwind Merge**: v2.5.5 - Utilidad para combinar clases de Tailwind
+- **Tailwind Animate**: v1.0.7 - Animaciones para Tailwind
+- **Class Variance Authority**: v0.7.1 - Creación de variantes de componentes
+- **CLSX**: v2.1.1 - Utilidad para construcción condicional de nombres de clase
+
+### Formularios y Validación
+- **React Hook Form**: Manejo de formularios
+- **Zod**: v3.25.67 - Validación de esquemas
+- **@hookform/resolvers**: v3.10.0 - Integraciones para React Hook Form
+
+### Visualización de Datos
+- **Recharts**: Biblioteca de gráficos y visualizaciones
+- **React Resizable Panels**: Paneles redimensionables
+
+### Utilidades y Herramientas
+- **Sharp**: Procesamiento de imágenes
+- **Canvas**: Manipulación de gráficos
+- **Date-fns**: v4.1.0 - Utilidades para manejo de fechas
+
+### Análisis y Monitoreo
+- **@vercel/analytics**: Análisis y métricas de uso
+
+### Herramientas de Desarrollo
+- **PostCSS**: v8.5 - Procesador de CSS
+- **Autoprefixer**: v10.4.20 - Añade prefijos de navegador automáticamente
+- **ESLint**: Linting de código
+- **@types/node**: v22 - Tipos de TypeScript para Node.js
+- **@types/react**: v18 - Tipos de TypeScript para React
+- **@types/react-dom**: v18 - Tipos de TypeScript para React DOM
+
+### Temas y Apariencia
+- **next-themes**: Sistema de temas claro/oscuro
+
+### Modelo de IA
 - **IA**: Google Gemini API (modelo gemini-2.0-flash)
-- **Despliegue**: Vercel
+

@@ -159,9 +159,9 @@ export default function Home() {
         <Stethoscope className="w-8 h-8" />
         Diagnóstico de Imágenes Médicas con IA
         <div className="flex gap-1 ml-2">
-          <Zap className="w-5 h-5 text-yellow-400" title="Análisis Mejorado" />
-          <Shield className="w-5 h-5 text-green-400" title="Validación Avanzada" />
-          <Activity className="w-5 h-5 text-blue-400" title="Calidad Optimizada" />
+          <Zap className="w-5 h-5 text-yellow-400" />
+          <Shield className="w-5 h-5 text-green-400" />
+          <Activity className="w-5 h-5 text-blue-400" />
         </div>
       </h1>
 
