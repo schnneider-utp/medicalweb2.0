@@ -353,7 +353,7 @@ export default function Home() {
             <p className="text-gray-300">Haz preguntas sobre los análisis de imágenes o consultas médicas generales</p>
           </div>
 
-          <div className="h-96 overflow-y-auto p-4 bg-gray-900/20">
+          <div className="h-[650px] overflow-y-auto p-4 bg-gray-900/20"> {/* Cambiado de h-96 a h-[600px] */}
             {chatHistory.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-full text-gray-400">
                 <p>Inicia una conversación con el asistente médico</p>
