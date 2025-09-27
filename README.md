@@ -136,62 +136,35 @@ La aplicación combina capacidades de análisis de imágenes con un sistema de c
 4. La respuesta se filtra para enmascarar datos sensibles
 5. Se presenta el resultado al usuario con formato estructurado
 
-```
-flowchart TD
-  %% Agrupación de componentes
-  subgraph "Next.js Frontend"
-    direction TB
-    UI_Home["Home Page\n(src/app/page.tsx)"] 
-    UI_Stats["Stats Page\n(src/app/stats/page.tsx)"]
-  end
+```mermaid
+graph TD
 
-  subgraph "API Routes (Next.js App Router)"
-    direction TB
-    API_Analyze["/api/analyze\n(src/app/api/analyze/route.ts)"]
-    API_Chat["/api/chat\n(src/app/api/chat/route.ts)"]
-    API_Stats["/api/stats\n(src/app/api/stats/route.ts)"]
-  end
+    subgraph medicalWebAppBoundary["Medical Web Application<br>/c:/Users/jaena/Downloads/medicalweb"]
+        subgraph nextjsFrontendBoundary["Next.js Frontend<br>/c:/Users/jaena/Downloads/medicalweb/app"]
+            homePage["Home Page<br>/c:/Users/jaena/Downloads/medicalweb/app/page.tsx"]
+            layout["Layout<br>/c:/Users/jaena/Downloads/medicalweb/app/layout.tsx"]
+            loadingIndicator["Loading Indicator<br>/c:/Users/jaena/Downloads/medicalweb/app/loading.tsx"]
+            acceptanceMetrics["Acceptance Metrics<br>/c:/Users/jaena/Downloads/medicalweb/app/components/AcceptanceMetrics.tsx"]
+            medicalTextRenderer["Medical Text Renderer<br>/c:/Users/jaena/Downloads/medicalweb/components/MedicalTextRenderer.tsx"]
+            themeProvider["Theme Provider<br>/c:/Users/jaena/Downloads/medicalweb/components/theme-provider.tsx"]
+            uiComponents["UI Components<br>/c:/Users/jaena/Downloads/medicalweb/components/ui"]
+            %% Edges at this level (grouped by source)
+            homePage["Home Page<br>/c:/Users/jaena/Downloads/medicalweb/app/page.tsx"] -->|"Uses"| layout["Layout<br>/c:/Users/jaena/Downloads/medicalweb/app/layout.tsx"]
+            homePage["Home Page<br>/c:/Users/jaena/Downloads/medicalweb/app/page.tsx"] -->|"Displays when loading"| loadingIndicator["Loading Indicator<br>/c:/Users/jaena/Downloads/medicalweb/app/loading.tsx"]
+            homePage["Home Page<br>/c:/Users/jaena/Downloads/medicalweb/app/page.tsx"] -->|"Includes"| acceptanceMetrics["Acceptance Metrics<br>/c:/Users/jaena/Downloads/medicalweb/app/components/AcceptanceMetrics.tsx"]
+            homePage["Home Page<br>/c:/Users/jaena/Downloads/medicalweb/app/page.tsx"] -->|"Includes"| medicalTextRenderer["Medical Text Renderer<br>/c:/Users/jaena/Downloads/medicalweb/components/MedicalTextRenderer.tsx"]
+            homePage["Home Page<br>/c:/Users/jaena/Downloads/medicalweb/app/page.tsx"] -->|"Uses various"| uiComponents["UI Components<br>/c:/Users/jaena/Downloads/medicalweb/components/ui"]
+            layout["Layout<br>/c:/Users/jaena/Downloads/medicalweb/app/layout.tsx"] -->|"Uses"| themeProvider["Theme Provider<br>/c:/Users/jaena/Downloads/medicalweb/components/theme-provider.tsx"]
+        end
+        subgraph nextjsBackendBoundary["Next.js Backend (API Routes)<br>/c:/Users/jaena/Downloads/medicalweb/app/api"]
+            analysisApi["Analysis API<br>/c:/Users/jaena/Downloads/medicalweb/app/api/analyze/route.ts"]
+            chatApi["Chat API<br>/c:/Users/jaena/Downloads/medicalweb/app/api/chat/route.ts"]
+        end
+        %% Edges at this level (grouped by source)
+        homePage["Home Page<br>/c:/Users/jaena/Downloads/medicalweb/app/page.tsx"] -->|"Requests analysis data | HTTPS/JSON"| analysisApi["Analysis API<br>/c:/Users/jaena/Downloads/medicalweb/app/api/analyze/route.ts"]
+        homePage["Home Page<br>/c:/Users/jaena/Downloads/medicalweb/app/page.tsx"] -->|"Sends chat messages | HTTPS/JSON"| chatApi["Chat API<br>/c:/Users/jaena/Downloads/medicalweb/app/api/chat/route.ts"]
+    end
 
-  subgraph "Servicios Externos"
-    direction TB
-    GoogleAI["Google Gemini API"]
-  end
-
-  subgraph "Despliegue en Vercel"
-    direction TB
-    Vercel["Vercel Platform"]
-  end
-
-  %% Flujo de datos
-  UI_Home -->|"upload image / request analysis"| API_Analyze
-  UI_Home -->|"open chat context"| API_Chat
-  UI_Stats -->|"fetch usage stats"| API_Stats
-
-  API_Analyze -->|"calls"| GoogleAI
-  API_Chat -->|"calls"| GoogleAI
-  API_Stats -->|"reads logs/metrics"| Vercel
-
-  %% Hosting deployment
-  UI_Home & UI_Stats & API_Analyze & API_Chat & API_Stats -->|"deployed on"| Vercel
-
-  %% Click Events
-  click UI_Home "https://github.com/schnneider-utp/medical-web/blob/master/src/app/page.tsx"
-  click UI_Stats "https://github.com/schnneider-utp/medical-web/blob/master/src/app/stats/page.tsx"
-  click API_Analyze "https://github.com/schnneider-utp/medical-web/blob/master/src/app/api/analyze/route.ts"
-  click API_Chat "https://github.com/schnneider-utp/medical-web/blob/master/src/app/api/chat/route.ts"
-  click API_Stats "https://github.com/schnneider-utp/medical-web/blob/master/src/app/api/stats/route.ts"
-  click Vercel "https://github.com/schnneider-utp/medical-web/blob/master/vercel.json"
-
-  %% Estilos
-  classDef frontend fill:#f9f,stroke:#333,stroke-width:1px;
-  classDef backend fill:#bbf,stroke:#333,stroke-width:1px;
-  classDef external fill:#bfb,stroke:#333,stroke-width:1px,stroke-dasharray:5 5;
-  classDef hosting fill:#ffd,stroke:#333,stroke-width:1px,stroke-dasharray:2 2;
-
-  class UI_Home,UI_Stats frontend
-  class API_Analyze,API_Chat,API_Stats backend
-  class GoogleAI external
-  class Vercel hosting
 ```
 
 
