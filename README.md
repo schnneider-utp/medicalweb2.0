@@ -32,6 +32,40 @@ La aplicación combina capacidades de análisis de imágenes con un sistema de c
 - **API Key de Google AI (Gemini)**: Necesaria para acceder a los modelos de IA de Google
   - Modelo utilizado: gemini-2.0-flash
   - [Obtener API Key](https://ai.google.dev/)
+## Cómo Obtener tu API Key de Google Gemini
+
+### Pasos para Configurar la API Key
+
+### 1. Acceder a Google AI Studio
+**Enlace directo**: [https://makersuite.google.com/app/apikey](https://makersuite.google.com/app/apikey)
+tambien el enlace se encuentra debajo del bloque donde se pone la api key en el software web 
+
+### 2. Iniciar Sesión
+- Utiliza tu cuenta de Google (Gmail)
+- Si no tienes cuenta, créala gratuitamente
+
+### 3. Crear la API Key
+1. Haz clic en **"Create API Key"** (Crear clave API)
+2. Selecciona o crea un proyecto de Google Cloud
+3. Copia la clave API generada (empieza con `AIza...`)
+
+### 4. Configurar en la Aplicación
+1. Abre la aplicación Medical Imaging Diagnosis Agent
+2. Busca el campo **"Google Gemini API Key"**
+3. Pega la API Key que copiaste
+4. Haz clic en **"Guardar API Key"**
+
+## Información Importante
+
+### Plan Gratuito
+- **60 solicitudes por minuto**
+- **1,500 solicitudes por día**
+- Suficiente para uso educativo
+
+### Seguridad
+- La API Key se almacena **solo en tu navegador**
+- **No se envía** a nuestros servidores
+- Puedes eliminarla cuando quieras
 
 ## Instalación y Configuración
 
