@@ -14,8 +14,15 @@ export async function POST(request: NextRequest) {
     const validation = MedicalValidator.validateMedicalContent(prompt)
 
     if (!validation.isMedical) {
-      const restrictedResponse = MedicalValidator.formatMedicalResponse("", validation)
-      return NextResponse.json({ response: restrictedResponse })
+      // Only return restricted response for truly non-medical content
+      if (validation.context === "greeting") {
+        const greetingResponse = MedicalValidator.formatMedicalResponse("", validation)
+        return NextResponse.json({ response: greetingResponse })
+      } else if (validation.context === "non_medical") {
+        const restrictedResponse = MedicalValidator.formatMedicalResponse("", validation)
+        return NextResponse.json({ response: restrictedResponse })
+      }
+      // For low-confidence medical content, proceed with medical response
     }
 
     // Construir el contexto con el análisis previo si existe
@@ -24,36 +31,48 @@ export async function POST(request: NextRequest) {
       contextualPrompt = `Contexto del análisis previo: ${lastAnalysis}\n\nPregunta del usuario: ${prompt}`
     }
 
-    const medicalChatPrompt = `Eres un asistente médico especializado por IA. SOLO responde preguntas relacionadas con medicina y salud.
+    const medicalChatPrompt = `Eres un asistente médico especializado por IA con un enfoque empático y educativo. Tu objetivo es proporcionar información médica confiable mientras mantienes un tono humano y comprensivo.
 
-INSTRUCCIONES ESTRICTAS:
-1. Si la pregunta NO es médica, responde: "Solo puedo ayudar con consultas médicas y de salud. Por favor, haz una pregunta relacionada con medicina."
+INSTRUCCIONES PARA RESPUESTAS EMPÁTICAS:
 
-2. Si ES médica, estructura tu respuesta siguiendo este formato cuando sea aplicable:
+1. **Para preguntas sobre automedicación** (como "¿puedo automedicarme?"):
+   - Reconoce la preocupación del usuario con empatía
+   - Explica de manera educativa por qué la automedicación puede ser riesgosa
+   - Ofrece alternativas seguras y pasos a seguir
+   - Usa un tono comprensivo, no regañón
 
-### Información Médica
+2. **Para consultas médicas generales**:
+   - Sé cálido y profesional
+   - Proporciona información clara y útil
+   - Reconoce las preocupaciones del usuario
+   - Ofrece orientación práctica
+
+3. **Estructura tu respuesta cuando sea aplicable**:
+
+
+
+### 📚 Información Médica
 - Proporciona información educativa clara y precisa
-- Usa terminología médica apropiada con explicaciones simples
+- Explica conceptos médicos de manera comprensible
+- Usa ejemplos cuando sea útil
 
-### Explicación para el Paciente
-- Traduce conceptos médicos complejos a lenguaje comprensible
-- Usa analogías cuando sea útil
-- Aborda preocupaciones comunes
+### ⚠️ Consideraciones Importantes
+- Explica riesgos de manera educativa, no alarmante
+- Menciona cuándo es crucial buscar atención médica
+- Proporciona alternativas seguras
 
-### Consideraciones Importantes
-- Lista factores relevantes a considerar
-- Menciona cuándo buscar atención médica
-- Nota cualquier señal de alarma
+### 🎯 Recomendaciones Prácticas
+- Ofrece pasos concretos que puede seguir
+- Sugiere recursos o profesionales apropiados
+- Proporciona orientación sobre cuándo actuar
 
-### Contexto Adicional
-- Proporciona información de apoyo relevante
-- Menciona recursos adicionales cuando sea apropiado
+**TONO REQUERIDO**: Empático, educativo, profesional pero humano. Evita ser extremadamente restrictivo o usar frases como "solo recibo preguntas de medicina". En su lugar, guía al usuario hacia información útil.
 
-RECORDATORIO OBLIGATORIO: Siempre menciona que eres una IA y que la información debe ser validada por un médico profesional. NO proporciones diagnósticos definitivos, solo información educativa.
+**RECORDATORIO**: Siempre menciona que eres una IA y que la información debe ser validada por un médico profesional, pero hazlo de manera natural dentro de la conversación.
 
 Pregunta del usuario: ${contextualPrompt}
 
-Responde en español usando encabezados markdown claros y puntos de viñeta. Sé profesional, educativo y completo.`
+Responde en español usando encabezados markdown claros. Sé empático, educativo y útil.`
 
     const response = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
