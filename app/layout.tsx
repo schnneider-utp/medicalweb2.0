@@ -7,11 +7,11 @@ import './globals.css'
 export const metadata: Metadata = {
   title: 'Medical Web App',
   description: 'Aplicación web para análisis médico',
-  icons: {
-    icon: '/pepemedico.ico',
-    shortcut: '/pepemedico.ico',
-    apple: '/pepemedico.ico',
-  },
+  icons: [
+    { rel: 'icon', url: '/pepemedico.ico' },
+    { rel: 'shortcut icon', url: '/pepemedico.ico' },
+    { rel: 'apple-touch-icon', url: '/pepemedico.ico' }
+  ]
 }
 
 export default function RootLayout({
