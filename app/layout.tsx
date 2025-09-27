@@ -5,9 +5,13 @@ import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'v0 App',
-  description: 'Created with v0',
-  generator: 'v0.app',
+  title: 'Medical Web App',
+  description: 'Aplicación web para análisis médico',
+  icons: {
+    icon: '/pepemedico.ico',
+    shortcut: '/pepemedico.ico',
+    apple: '/pepemedico.ico',
+  },
 }
 
 export default function RootLayout({
