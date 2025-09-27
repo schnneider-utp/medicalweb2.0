@@ -371,7 +371,7 @@ export default function Home() {
                     {msg.role === "assistant" ? (
                       <MedicalTextRenderer text={msg.content} showSections={false} />
                     ) : (
-                      <div dangerouslySetInnerHTML={{ __html: msg.content.replace(/\n/g, "<br>") }} />
+                      <div className="break-words whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: msg.content.replace(/\n/g, "<br>") }} />
                     )}
                   </div>
                 </div>
@@ -397,26 +397,40 @@ export default function Home() {
           </div>
 
           <form onSubmit={handleChatSubmit} className="p-4 border-t border-gray-600">
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={chatInput}
-                onChange={(e) => setChatInput(e.target.value)}
-                placeholder="Escribe tu pregunta aquí..."
-                className="flex-1 p-3 rounded-lg bg-white text-black focus:ring-2 focus:ring-blue-500 transition-all duration-300"
-                disabled={isChatLoading}
-              />
-              <button
-                type="submit"
-                disabled={!chatInput.trim() || isChatLoading}
-                className={`px-6 py-3 rounded-lg transition-all duration-300 flex items-center justify-center ${
-                  !chatInput.trim() || isChatLoading
-                    ? "opacity-50 cursor-not-allowed bg-gray-600"
-                    : "hover:shadow-lg transform hover:scale-105 medical-bg-secondary text-black"
-                }`}
-              >
-                {isChatLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-              </button>
+            <div className="flex flex-col gap-2">
+              <div className="flex gap-2">
+                <textarea
+                  value={chatInput}
+                  onChange={(e) => {
+                    if (e.target.value.length <= 1200) {
+                      setChatInput(e.target.value)
+                      // Ajustar altura automáticamente
+                      e.target.style.height = 'auto';
+                      e.target.style.height = e.target.scrollHeight + 'px';
+                    }
+                  }}
+                  placeholder="Escribe tu pregunta aquí... (máximo 1200 caracteres)"
+                  className="flex-1 p-3 rounded-lg bg-white text-black focus:ring-2 focus:ring-blue-500 transition-all duration-300 resize-none overflow-hidden min-h-[48px] max-h-[120px]"
+                  disabled={isChatLoading}
+                  maxLength={1200}
+                  rows={1}
+                  style={{ height: '48px' }}
+                />
+                <button
+                  type="submit"
+                  disabled={!chatInput.trim() || isChatLoading}
+                  className={`px-6 py-3 rounded-lg transition-all duration-300 flex items-center justify-center h-[48px] ${
+                    !chatInput.trim() || isChatLoading
+                      ? "opacity-50 cursor-not-allowed bg-gray-600"
+                      : "hover:shadow-lg transform hover:scale-105 medical-bg-secondary text-black"
+                  }`}
+                >
+                  {isChatLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                </button>
+              </div>
+              <div className="text-sm text-gray-400 flex justify-end">
+                {chatInput.length}/1200 caracteres
+              </div>
             </div>
           </form>
         </div>
