@@ -463,7 +463,7 @@ export default function Home() {
               chatHistory.map((msg, index) => (
                 <div key={index} className={`mb-4 ${msg.role === "user" ? "text-right" : "text-left"}`}>
                   <div
-                    className={`inline-block p-3 rounded-lg max-w-[80%] shadow-md ${
+                    className={`inline-block p-3 rounded-lg max-w-[80%] shadow-md overflow-hidden ${
                       msg.role === "user"
                         ? "medical-bg-secondary text-black rounded-tr-none"
                         : "bg-white text-black rounded-tl-none"
@@ -472,7 +472,7 @@ export default function Home() {
                     {msg.role === "assistant" ? (
                       <MedicalTextRenderer text={msg.content} showSections={false} />
                     ) : (
-                      <div className="break-words whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: msg.content.replace(/\n/g, "<br>") }} />
+                      <div className="overflow-hidden" dangerouslySetInnerHTML={{ __html: msg.content.replace(/\n/g, "<br>") }} />
                     )}
                   </div>
                 </div>
