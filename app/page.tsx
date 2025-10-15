@@ -22,19 +22,24 @@ import {
   Zap,
 } from "lucide-react"
 
+interface AnalysisResult {
+  fileName: string
+  analysis: string
+  imagePreview: string
+  imageQuality: any
+}
+
 export default function Home() {
   const [apiKey, setApiKey] = useState("")
   const [isApiKeySet, setIsApiKeySet] = useState(false)
-  const [selectedImage, setSelectedImage] = useState<File | null>(null)
-  const [imagePreview, setImagePreview] = useState<string | null>(null)
-  const [analysis, setAnalysis] = useState<string | null>(null)
+  const [selectedImages, setSelectedImages] = useState<File[]>([])
+  const [analysisResults, setAnalysisResults] = useState<AnalysisResult[]>([])
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [chatHistory, setChatHistory] = useState<{ role: string; content: string }[]>([])
   const [chatInput, setChatInput] = useState("")
   const [isChatLoading, setIsChatLoading] = useState(false)
   const [activeTab, setActiveTab] = useState("upload")
   const [error, setError] = useState<string | null>(null)
-  const [imageQuality, setImageQuality] = useState<any>(null)
 
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -52,24 +57,24 @@ export default function Home() {
   }
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      setSelectedImage(file)
-      const reader = new FileReader()
-      reader.onload = () => {
-        setImagePreview(reader.result as string)
-      }
-      reader.readAsDataURL(file)
-      setImageQuality(null)
+    const files = Array.from(e.target.files || [])
+    if (files.length > 0) {
+      setSelectedImages((prev) => [...prev, ...files])
     }
   }
 
-  const handleAnalyzeImage = async () => {
-    if (!selectedImage || !isApiKeySet) return
+  const handleRemoveImage = (index: number) => {
+    setSelectedImages((prev) => prev.filter((_, i) => i !== index))
+    setAnalysisResults((prev) => prev.filter((_, i) => i !== index))
+  }
+
+  const handleAnalyzeImages = async () => {
+    if (selectedImages.length === 0 || !isApiKeySet) return
 
     const maxSize = 10 * 1024 * 1024 // 10MB
-    if (selectedImage.size > maxSize) {
-      setError("La imagen es demasiado grande. Máximo 10MB.")
+    const oversizedImages = selectedImages.filter(img => img.size > maxSize)
+    if (oversizedImages.length > 0) {
+      setError(`${oversizedImages.length} imagen(es) exceden el límite de 10MB.`)
       return
     }
 
@@ -79,7 +84,9 @@ export default function Home() {
     try {
       const formData = new FormData()
       formData.append("apiKey", apiKey)
-      formData.append("image", selectedImage)
+      selectedImages.forEach((image) => {
+        formData.append("images", image)
+      })
 
       const response = await fetch("/api/analyze", {
         method: "POST",
@@ -89,19 +96,59 @@ export default function Home() {
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.error || "Error al analizar la imagen")
+        throw new Error(data.error || "Error al analizar las imágenes")
       }
 
-      setAnalysis(data.analysis)
-      setImageQuality(data.imageQuality)
+      // Crear resultados con previsualizaciones
+      const newResults = await Promise.all(
+        data.results.map(async (result: any, index: number) => {
+          const preview = await new Promise<string>((resolve) => {
+            const reader = new FileReader()
+            reader.onload = () => {
+              resolve(reader.result as string)
+            }
+            reader.readAsDataURL(selectedImages[index])
+          })
+
+          return {
+            fileName: result.fileName,
+            analysis: result.analysis,
+            imagePreview: preview,
+            imageQuality: result.imageQuality,
+          }
+        })
+      )
+
+      setAnalysisResults(newResults)
+
+      // Actualizar el contexto del chat con todos los análisis
+      const analysisContext = newResults.map((result, index) => {
+        return `Análisis de imagen ${index + 1} (${result.fileName}):\n${result.analysis}\n\nCalidad de imagen: ${result.imageQuality.quality}\n${
+          result.imageQuality.issues.length > 0
+            ? `Problemas detectados:\n${result.imageQuality.issues.join('\n')}`
+            : 'No se detectaron problemas de calidad.'
+        }\n---\n`
+      }).join('\n')
 
       await fetch("/api/chat", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ analysis: data.analysis }),
+        body: JSON.stringify({ 
+          analysis: analysisContext
+        }),
       })
+
+      // Agregar mensaje informativo al chat
+      setChatHistory(prev => [
+        ...prev,
+        {
+          role: "assistant",
+          content: `He analizado ${newResults.length} ${newResults.length === 1 ? 'imagen' : 'imágenes'} médica${newResults.length === 1 ? '' : 's'}. Puedes preguntarme sobre cualquier aspecto de los análisis realizados.`
+        }
+      ])
+
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error desconocido")
       console.error("Error:", err)
@@ -255,47 +302,75 @@ export default function Home() {
           <div className="p-6 rounded-lg shadow-lg md:col-span-1 medical-bg-primary">
             <h2 className="text-xl font-semibold mb-4 medical-text-light flex items-center gap-2">
               <Upload className="w-5 h-5" />
-              Subir Imagen Médica
+              Subir Imágenes Médicas
             </h2>
 
             <div className="mb-6">
-              <input type="file" ref={fileInputRef} onChange={handleImageChange} accept="image/*" className="hidden" />
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleImageChange}
+                accept="image/*"
+                multiple
+                className="hidden"
+              />
               <button
                 onClick={() => fileInputRef.current?.click()}
                 className="w-full py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all duration-300 hover:shadow-lg medical-bg-secondary text-black"
               >
                 <FileImage className="w-4 h-4" />
-                Seleccionar Imagen
+                Seleccionar Imágenes
               </button>
             </div>
 
-            {imagePreview && (
-              <div className="mt-4 relative aspect-square w-full overflow-hidden rounded-lg border-4 border-gray-400">
-                <Image src={imagePreview || "/placeholder.svg"} alt="Vista previa" fill className="object-contain" />
-              </div>
-            )}
-
-            {imageQuality && (
-              <div className="mt-4 p-3 rounded-lg bg-gray-800/30">
-                <h4 className="text-sm font-medium medical-text-light mb-2 flex items-center gap-2">
-                  <Activity className="w-4 h-4" />
-                  Calidad de Imagen: {imageQuality.quality.toUpperCase()}
-                </h4>
-                {imageQuality.issues.length > 0 && (
-                  <div className="text-xs text-yellow-300">
-                    {imageQuality.issues.map((issue: string, idx: number) => (
-                      <div key={idx}>• {issue}</div>
-                    ))}
+            <div className="space-y-4">
+              {selectedImages.map((image, index) => (
+                <div
+                  key={image.name}
+                  className="relative group rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300"
+                >
+                  <img
+                    src={URL.createObjectURL(image)}
+                    alt={`Vista previa ${image.name}`}
+                    className="w-full h-48 object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <button
+                    onClick={() => handleRemoveImage(index)}
+                    className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-red-600"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-4 w-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </button>
+                  <div className="absolute bottom-0 left-0 right-0 p-2 bg-black/50 text-white text-sm truncate">
+                    {image.name}
                   </div>
-                )}
-              </div>
-            )}
+                  {analysisResults[index]?.imageQuality && (
+                    <div className="absolute top-2 left-2 bg-black/50 text-white text-xs px-2 py-1 rounded">
+                      Calidad: {analysisResults[index].imageQuality.quality}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
 
             <button
-              onClick={handleAnalyzeImage}
-              disabled={!selectedImage || isAnalyzing}
+              onClick={handleAnalyzeImages}
+              disabled={selectedImages.length === 0 || isAnalyzing}
               className={`mt-6 w-full py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all duration-300 ${
-                !selectedImage || isAnalyzing
+                selectedImages.length === 0 || isAnalyzing
                   ? "opacity-50 cursor-not-allowed bg-gray-600"
                   : "hover:shadow-lg transform hover:scale-105 bg-white text-black"
               }`}
@@ -308,7 +383,7 @@ export default function Home() {
               ) : (
                 <>
                   <Search className="w-4 h-4" />
-                  Analizar Imagen
+                  Analizar Imágenes
                 </>
               )}
             </button>
@@ -318,25 +393,51 @@ export default function Home() {
             <h2 className="text-xl font-semibold mb-4 medical-text-light flex items-center gap-2">
               <FileImage className="w-5 h-5" />
               Resultados del Análisis
-              {analysis && (
-                <span className="ml-2 px-2 py-1 text-xs bg-green-600 text-white rounded-full">Análisis Mejorado</span>
+              {analysisResults.length > 0 && (
+                <span className="ml-2 px-2 py-1 text-xs bg-green-600 text-white rounded-full">
+                  {analysisResults.length} {analysisResults.length === 1 ? 'Análisis' : 'Análisis'}
+                </span>
               )}
             </h2>
 
             {isAnalyzing ? (
               <div className="flex flex-col items-center justify-center h-64">
                 <Loader2 className="w-16 h-16 animate-spin text-white" />
-                <p className="mt-6 text-lg medical-text-light">Analizando imagen médica con IA avanzada...</p>
+                <p className="mt-6 text-lg medical-text-light">Analizando imágenes médicas con IA avanzada...</p>
                 <p className="mt-2 text-sm text-gray-400">Procesando con algoritmos de última generación</p>
               </div>
-            ) : analysis ? (
-              <div className="bg-gray-50 rounded-lg p-6">
-                <MedicalTextRenderer text={analysis} showSections={true} />
+            ) : analysisResults.length > 0 ? (
+              <div className="space-y-8">
+                {analysisResults.map((result, index) => (
+                  <div key={index} className="bg-gray-50 rounded-lg p-6">
+                    <h3 className="text-lg font-semibold mb-4 text-gray-900">
+                      Análisis de {result.fileName}
+                    </h3>
+                    <MedicalTextRenderer text={result.analysis} showSections={true} />
+                    {result.imageQuality && (
+                      <div className="mt-4 p-3 rounded-lg bg-gray-100">
+                        <h4 className="text-sm font-medium text-gray-900 mb-2 flex items-center gap-2">
+                          <Activity className="w-4 h-4" />
+                          Calidad de Imagen: {result.imageQuality.quality}
+                        </h4>
+                        {result.imageQuality.issues.length > 0 && (
+                          <div className="text-xs text-yellow-600">
+                            {result.imageQuality.issues.map((issue: string, idx: number) => (
+                              <div key={idx}>• {issue}</div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                ))}
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center h-64 text-center p-6 rounded-lg bg-gray-800/20">
                 <p className="medical-text-light">Los resultados del análisis aparecerán aquí</p>
-                <p className="mt-2 text-sm text-gray-400">Sube una imagen médica y haz clic en "Analizar Imagen"</p>
+                <p className="mt-2 text-sm text-gray-400">
+                  Sube una o más imágenes médicas y haz clic en "Analizar Imágenes"
+                </p>
               </div>
             )}
           </div>
@@ -353,7 +454,7 @@ export default function Home() {
             <p className="text-gray-300">Haz preguntas sobre los análisis de imágenes o consultas médicas generales</p>
           </div>
 
-          <div className="h-[650px] overflow-y-auto p-4 bg-gray-900/20"> {/* Cambiado de h-96 a h-[600px] */}
+          <div className="h-[650px] overflow-y-auto p-4 bg-gray-900/20">
             {chatHistory.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-full text-gray-400">
                 <p>Inicia una conversación con el asistente médico</p>
