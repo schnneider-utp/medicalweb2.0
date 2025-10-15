@@ -316,9 +316,9 @@ export default function Home() {
               />
               <button
                 onClick={() => fileInputRef.current?.click()}
-                className="w-full py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all duration-300 hover:shadow-lg medical-bg-secondary text-black"
+                className="w-full py-4 px-6 rounded-lg medical-bg-secondary text-black font-semibold transition-transform transform hover:scale-105 active:scale-95 flex items-center justify-center gap-3 shadow-lg"
               >
-                <FileImage className="w-4 h-4" />
+                <Upload className="w-6 h-6" />
                 Seleccionar Imágenes
               </button>
             </div>
@@ -401,21 +401,21 @@ export default function Home() {
             </h2>
 
             {isAnalyzing ? (
-              <div className="flex flex-col items-center justify-center h-64">
+              <div className="flex flex-col items-center justify-center h-64 animate-fade-in">
                 <Loader2 className="w-16 h-16 animate-spin text-white" />
-                <p className="mt-6 text-lg medical-text-light">Analizando imágenes médicas con IA avanzada...</p>
-                <p className="mt-2 text-sm text-gray-400">Procesando con algoritmos de última generación</p>
+                <p className="mt-6 text-lg medical-text-light animate-pulse">Analizando imágenes médicas con IA avanzada...</p>
+                <p className="mt-2 text-sm text-gray-400 animate-fade-in">Procesando con algoritmos de última generación</p>
               </div>
             ) : analysisResults.length > 0 ? (
               <div className="space-y-8">
                 {analysisResults.map((result, index) => (
-                  <div key={index} className="bg-gray-50 rounded-lg p-6">
+                  <div key={index} className="bg-gray-50 rounded-lg p-6 animate-fade-up">
                     <h3 className="text-lg font-semibold mb-4 text-gray-900">
                       Análisis de {result.fileName}
                     </h3>
                     <MedicalTextRenderer text={result.analysis} showSections={true} />
                     {result.imageQuality && (
-                      <div className="mt-4 p-3 rounded-lg bg-gray-100">
+                      <div className="mt-4 p-3 rounded-lg bg-gray-100 animate-fade-in">
                         <h4 className="text-sm font-medium text-gray-900 mb-2 flex items-center gap-2">
                           <Activity className="w-4 h-4" />
                           Calidad de Imagen: {result.imageQuality.quality}
@@ -423,7 +423,7 @@ export default function Home() {
                         {result.imageQuality.issues.length > 0 && (
                           <div className="text-xs text-yellow-600">
                             {result.imageQuality.issues.map((issue: string, idx: number) => (
-                              <div key={idx}>• {issue}</div>
+                              <div key={idx} className="animate-fade-in" style={{ animationDelay: `${idx * 150}ms` }}>• {issue}</div>
                             ))}
                           </div>
                         )}
@@ -461,7 +461,7 @@ export default function Home() {
               </div>
             ) : (
               chatHistory.map((msg, index) => (
-                <div key={index} className={`mb-4 ${msg.role === "user" ? "text-right" : "text-left"}`}>
+                <div key={index} className={`mb-4 ${msg.role === "user" ? "text-right" : "text-left"} animate-fade-in`}>
                   <div
                     className={`inline-block p-3 rounded-lg max-w-[80%] shadow-md overflow-hidden ${
                       msg.role === "user"
@@ -479,7 +479,7 @@ export default function Home() {
               ))
             )}
             {isChatLoading && (
-              <div className="flex justify-start mb-4">
+              <div className="flex justify-start mb-4 animate-fade-in">
                 <div className="p-3 rounded-lg rounded-tl-none shadow-md bg-gray-600">
                   <div className="flex space-x-2">
                     <div className="w-2 h-2 bg-white rounded-full animate-bounce"></div>
