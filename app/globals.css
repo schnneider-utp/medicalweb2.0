@@ -141,3 +141,25 @@
 .medical-bg-dark {
   background-color: #000f08;
 }
+
+
+/* Estilos para manejar contenido largo y enlaces */
+a {
+  word-break: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
+  display: inline-block;
+}
+
+p {
+  word-break: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
+}
+
+pre {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-x: auto;
+  max-width: 100%;
+}
