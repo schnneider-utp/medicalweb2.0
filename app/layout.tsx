@@ -8,9 +8,9 @@ export const metadata: Metadata = {
   title: 'Medical Web App',
   description: 'Aplicación web para análisis médico',
   icons: [
-    { rel: 'icon', url: '/pepemedico.ico' },
-    { rel: 'shortcut icon', url: '/pepemedico.ico' },
-    { rel: 'apple-touch-icon', url: '/pepemedico.ico' }
+    { rel: 'icon', url: '/pepemedico.png', type: 'image/png' },
+    { rel: 'shortcut icon', url: '/pepemedico.png' },
+    { rel: 'apple-touch-icon', url: '/pepemedico.png' }
   ]
 }
 
