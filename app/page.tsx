@@ -150,7 +150,24 @@ export default function Home() {
       ])
 
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Error desconocido")
+      let errorMessage = err instanceof Error ? err.message : "Error desconocido"
+      
+      // Manejo específico de errores de API key
+      if (errorMessage === "API_KEY_EXPIRED") {
+        errorMessage = "⚠️ Tu API key de Gemini ha expirado. Por favor, obtén una nueva API key y configúrala nuevamente."
+        // Resetear la API key para forzar al usuario a configurar una nueva
+        setIsApiKeySet(false)
+        localStorage.removeItem("googleApiKey")
+        setApiKey("")
+      } else if (errorMessage === "API_KEY_INVALID") {
+        errorMessage = "🔑 La API key proporcionada no es válida. Por favor, verifica que hayas copiado correctamente tu API key de Gemini."
+        // Resetear la API key para forzar al usuario a configurar una nueva
+        setIsApiKeySet(false)
+        localStorage.removeItem("googleApiKey")
+        setApiKey("")
+      }
+      
+      setError(errorMessage)
       console.error("Error:", err)
     } finally {
       setIsAnalyzing(false)
@@ -192,7 +209,24 @@ export default function Home() {
 
       chatMetrics.trackResponse(chatInput, true)
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Error desconocido")
+      let errorMessage = err instanceof Error ? err.message : "Error desconocido"
+      
+      // Manejo específico de errores de API key
+      if (errorMessage === "API_KEY_EXPIRED") {
+        errorMessage = "⚠️ Tu API key de Gemini ha expirado. Por favor, obtén una nueva API key y configúrala nuevamente."
+        // Resetear la API key para forzar al usuario a configurar una nueva
+        setIsApiKeySet(false)
+        localStorage.removeItem("googleApiKey")
+        setApiKey("")
+      } else if (errorMessage === "API_KEY_INVALID") {
+        errorMessage = "🔑 La API key proporcionada no es válida. Por favor, verifica que hayas copiado correctamente tu API key de Gemini."
+        // Resetear la API key para forzar al usuario a configurar una nueva
+        setIsApiKeySet(false)
+        localStorage.removeItem("googleApiKey")
+        setApiKey("")
+      }
+      
+      setError(errorMessage)
       console.error("Error:", err)
       chatMetrics.trackResponse(chatInput, false)
     } finally {
@@ -229,13 +263,24 @@ export default function Home() {
                 type="password"
                 value={apiKey}
                 onChange={(e) => setApiKey(e.target.value)}
-                placeholder="Ingresa tu Google API Key"
+                placeholder="Ingresa tu Google API Key (ej: AIzaSy...)"
                 className="w-full p-3 border-0 rounded-lg shadow-inner focus:ring-2 focus:ring-opacity-50 transition-all duration-300 bg-white text-black"
               />
+              {apiKey && apiKey.length < 30 && (
+                <p className="mt-2 text-sm text-amber-400 flex items-center gap-1">
+                  <AlertTriangle className="w-4 h-4" />
+                  La API key debe tener al menos 30 caracteres
+                </p>
+              )}
             </div>
             <button
               onClick={handleApiKeySubmit}
-              className="px-6 py-3 rounded-lg font-medium transition-all duration-300 transform hover:scale-105 hover:shadow-lg medical-bg-secondary text-black"
+              disabled={!apiKey.trim() || apiKey.length < 30}
+              className={`px-6 py-3 rounded-lg font-medium transition-all duration-300 transform ${
+                apiKey.trim() && apiKey.length >= 30
+                  ? "hover:scale-105 hover:shadow-lg medical-bg-secondary text-black"
+                  : "bg-gray-600 text-gray-400 cursor-not-allowed"
+              }`}
             >
               Guardar API Key
             </button>
@@ -546,11 +591,35 @@ export default function Home() {
       )}
 
       {error && (
-        <div className="w-full max-w-7xl mx-auto mt-4 p-4 rounded-lg bg-red-900/20 border border-red-500">
-          <p className="flex items-center gap-2 text-red-300">
+        <div className={`w-full max-w-7xl mx-auto mt-4 p-4 rounded-lg border ${
+          error.includes("API key") 
+            ? "bg-amber-900/20 border-amber-500" 
+            : "bg-red-900/20 border-red-500"
+        }`}>
+          <p className={`flex items-center gap-2 ${
+            error.includes("API key") 
+              ? "text-amber-300" 
+              : "text-red-300"
+          }`}>
             <AlertTriangle className="w-5 h-5" />
             {error}
           </p>
+          {error.includes("API key") && (
+            <div className="mt-3 p-3 bg-amber-800/20 rounded border border-amber-600">
+              <p className="text-amber-200 text-sm flex items-center gap-2">
+                <Shield className="w-4 h-4" />
+                <strong>Solución:</strong> Obtén una nueva API key desde{" "}
+                <a
+                  href="https://aistudio.google.com/apikey"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline hover:text-amber-100"
+                >
+                  Google AI Studio
+                </a>
+              </p>
+            </div>
+          )}
         </div>
       )}
 

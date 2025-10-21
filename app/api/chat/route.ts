@@ -98,7 +98,16 @@ Responde en español usando encabezados markdown claros. Sé empático, educativ
     if (!response.ok) {
       const errorData = await response.json()
       console.error("[v0] Gemini API error:", errorData)
-      throw new Error(errorData.error?.message || "Error en la API de Google")
+      let errorMessage = errorData.error?.message || "Error en la API de Google"
+      
+      // Manejo específico de errores de API key
+      if (errorMessage.includes("API key expired") || errorMessage.includes("expired")) {
+        errorMessage = "API_KEY_EXPIRED"
+      } else if (errorMessage.includes("API key not valid") || errorMessage.includes("invalid") && errorMessage.includes("key")) {
+        errorMessage = "API_KEY_INVALID"
+      }
+
+      return NextResponse.json({ error: errorMessage }, { status: response.status })
     }
 
     const data = await response.json()

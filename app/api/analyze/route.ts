@@ -114,7 +114,12 @@ export async function POST(request: NextRequest) {
               console.error("[v0] Gemini API JSON error:", errorData)
               errorMessage = errorData.error?.message || errorMessage
 
-              if (errorMessage.includes("Provided image is not valid") || errorMessage.includes("invalid")) {
+              // Manejo específico de errores de API key
+              if (errorMessage.includes("API key expired") || errorMessage.includes("expired")) {
+                errorMessage = "API_KEY_EXPIRED"
+              } else if (errorMessage.includes("API key not valid") || errorMessage.includes("invalid") && errorMessage.includes("key")) {
+                errorMessage = "API_KEY_INVALID"
+              } else if (errorMessage.includes("Provided image is not valid") || errorMessage.includes("invalid")) {
                 errorMessage = `La imagen ${image.name} no pudo ser procesada. Intenta con una imagen diferente o verifica que sea un archivo de imagen válido.`
               }
             } else {
@@ -126,7 +131,7 @@ export async function POST(request: NextRequest) {
               } else if (response.status === 400) {
                 errorMessage = `Solicitud inválida. La imagen ${image.name} podría estar corrupta o ser demasiado grande`
               } else if (response.status === 403) {
-                errorMessage = "API Key inválida o sin permisos"
+                errorMessage = "API_KEY_INVALID"
               } else if (response.status === 429) {
                 errorMessage = "Límite de solicitudes excedido. Intenta más tarde"
               } else {
