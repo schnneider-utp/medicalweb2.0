@@ -14,11 +14,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "API Key e imágenes son requeridos" }, { status: 400 })
     }
 
-    const maxSize = 10 * 1024 * 1024 // 10MB limit per image
+    const maxSize = 4.5 * 1024 * 1024 // 4.5MB limit per image
     const oversizedImages = images.filter(img => img.size > maxSize)
     if (oversizedImages.length > 0) {
       return NextResponse.json({ 
-        error: `${oversizedImages.length} imagen(es) exceden el límite de 10MB.`,
+        error: `${oversizedImages.length} imagen(es) exceden el límite de 4.5MB.`,
         oversizedImages: oversizedImages.map(img => img.name)
       }, { status: 400 })
     }

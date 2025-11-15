@@ -58,8 +58,28 @@ export default function Home() {
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || [])
-    if (files.length > 0) {
-      setSelectedImages((prev) => [...prev, ...files])
+    if (!files.length) return
+
+    const maxSizeBytes = Math.floor(4.5 * 1024 * 1024) // 4.5MB
+    const allowed: File[] = []
+    const oversized: File[] = []
+
+    for (const file of files) {
+      if (file.size > maxSizeBytes) {
+        oversized.push(file)
+      } else {
+        allowed.push(file)
+      }
+    }
+
+    if (oversized.length > 0) {
+      setError(`${oversized.length} imagen(es) superan el límite de 4.5MB que permite la plataforma de despliegue (Vercel).`)
+      // Limpiar el input para evitar mantener archivos no válidos
+      e.target.value = ""
+    }
+
+    if (allowed.length > 0) {
+      setSelectedImages((prev) => [...prev, ...allowed])
     }
   }
 
@@ -71,10 +91,12 @@ export default function Home() {
   const handleAnalyzeImages = async () => {
     if (selectedImages.length === 0 || !isApiKeySet) return
 
-    const maxSize = 10 * 1024 * 1024 // 10MB
+    const maxSize = 4.5 * 1024 * 1024 // 4.5MB
     const oversizedImages = selectedImages.filter(img => img.size > maxSize)
     if (oversizedImages.length > 0) {
-      setError(`${oversizedImages.length} imagen(es) exceden el límite de 10MB.`)
+      // Remover imágenes demasiado grandes de la selección para evitar errores
+      setSelectedImages((prev) => prev.filter((img) => img.size <= maxSize))
+      setError(`${oversizedImages.length} imagen(es) superan el límite de 4.5MB que permite la plataforma de despliegue (Vercel).`)
       return
     }
 
@@ -604,6 +626,7 @@ export default function Home() {
             <AlertTriangle className="w-5 h-5" />
             {error}
           </p>
+
           {error.includes("API key") && (
             <div className="mt-3 p-3 bg-amber-800/20 rounded border border-amber-600">
               <p className="text-amber-200 text-sm flex items-center gap-2">
@@ -616,6 +639,23 @@ export default function Home() {
                   className="underline hover:text-amber-100"
                 >
                   Google AI Studio
+                </a>
+              </p>
+            </div>
+          )}
+
+          {error.includes("4.5MB") && (
+            <div className="mt-3 p-3 bg-amber-800/20 rounded border border-amber-600">
+              <p className="text-amber-200 text-sm flex items-center gap-2">
+                <Shield className="w-4 h-4" />
+                <strong>Solución:</strong> Comprime tu imagen para que pese menos de 4.5MB en:{" "}
+                <a
+                  href="https://www.iloveimg.com/es/comprimir-imagen/comprimir-jpg"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline hover:text-amber-100"
+                >
+                  iLoveIMG - Comprimir JPG
                 </a>
               </p>
             </div>
