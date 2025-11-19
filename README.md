@@ -1,3 +1,61 @@
+<table>
+  <tr>
+    <td align="center" width="42%">
+      <img src="public/pepemedico.png" alt="Pepe Médico" width="360" />
+    </td>
+    <td align="left">
+      <h1>Pepe Contador</h1>
+      <p><em>Gestión de archivos y procesos contables con IA y RAG</em></p>
+      <p>
+        <img alt="Next.js" src="https://img.shields.io/badge/Next.js-000000?logo=next.js&logoColor=white" />
+        <img alt="React" src="https://img.shields.io/badge/React-20232a?logo=react&logoColor=61DAFB" />
+        <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white" />
+        <img alt="Tailwind CSS" src="https://img.shields.io/badge/Tailwind%20CSS-06B6D4?logo=tailwindcss&logoColor=white" />
+        <br/>
+        <img alt="Radix UI" src="https://img.shields.io/badge/Radix%20UI-161618?logo=radixui&logoColor=white" />
+        <img alt="Google Generative AI" src="https://img.shields.io/badge/Google%20Generative%20AI-4285F4?logo=google&logoColor=white" />
+        <img alt="Vercel" src="https://img.shields.io/badge/Vercel-000000?logo=vercel&logoColor=white" />
+      </p>
+      <p>
+        <a href="#instalación">Instalación</a> • <a href="#uso">Uso</a> • <a href="#variables-de-entorno-env">.env</a>
+      </p>
+    </td>
+  </tr>
+</table>
+
+# Pepe Contador
+
+Aplicación web para: subir archivos a Google Drive, activar procesos contables vía webhooks, gestionar un chat contable con IA y usar RAG sobre documentos subidos.
+
+## 👥 Desarrolladores
+
+<table>
+  <tr>
+    <td align="center">
+      <a href="https://github.com/schnneider-utp" target="_blank">
+        <img src="https://github.com/schnneider-utp.png" width="80" style="border-radius:50%;" />
+        <br/>
+        <sub><b>Jean Schnneider Arias Suarez</b></sub>
+      </a>
+    </td>
+    <td align="center">
+      <a href="https://github.com/JuanesUTP" target="_blank">
+        <img src="https://github.com/JuanesUTP.png" width="80" style="border-radius:50%;" />
+        <br/>
+        <sub><b>Juan Esteban Jaramillo Cano</b></sub>
+      </a>
+    </td>
+    <td align="center">
+      <a href="https://github.com/wolsybl" target="_blank">
+        <img src="https://github.com/wolsybl.png" width="80" style="border-radius:50%;" />
+        <br/>
+        <sub><b>Wilson Andres Henao Soto</b></sub>
+      </a>
+    </td>
+  </tr>
+</table>
+
+
 # Medical Imaging Diagnosis Agent
 
 ## Descripción del Proyecto
